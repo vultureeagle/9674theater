@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#050507">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Artemis · v0.23</title>
+<style>
+:root{--bg:#050507;--panel:#0d0d12;--panel2:#111118;--text:#f4f2f8;--muted:#aaa7b4;--green:#72f5a5;--purple:#9d72ff;--line:#292632;--danger:#ff7070}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}button,input,textarea,select{font:inherit}button{color:var(--text)}
+.hidden{display:none!important}.app-shell{height:100dvh;width:100%;display:flex;flex-direction:column;position:relative;background:radial-gradient(circle at 92% -5%,rgba(114,245,165,.10),transparent 25%),radial-gradient(circle at 5% 105%,rgba(157,114,255,.08),transparent 25%)}
+.header{flex:0 0 auto;padding:calc(10px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid var(--line);background:rgba(5,5,7,.94);backdrop-filter:blur(12px);position:relative;z-index:5}
+.header-row{display:flex;align-items:center;gap:9px}.brand{min-width:0;flex:1}.brand-name{font-weight:900;letter-spacing:.09em;font-size:14px}.tagline{font-size:13px;color:var(--muted);margin-top:2px}.header-actions{display:flex;gap:6px}.icon-btn{width:38px;height:38px;padding:0;border:1px solid var(--line);border-radius:12px;background:#0c0c11;display:grid;place-items:center;cursor:pointer}.icon-btn:active,.tool-btn:active,.send-btn:active{opacity:.72}.mode-badge{display:inline-flex;align-items:center;gap:5px;margin-top:7px;cursor:pointer;user-select:none;border:1px solid #373340;border-radius:999px;padding:4px 9px;font-size:11px;color:#d7d1e5;background:#0b0b10}
+.chat-wrap{position:relative;flex:1;min-height:0}.chat{height:100%;overflow-y:auto;overscroll-behavior:contain;padding:14px 64px 150px 12px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}.msg{max-width:900px;margin:0 auto 16px}.from{font-size:10px;color:var(--green);font-weight:900;letter-spacing:.07em;margin-bottom:4px}.msg-body{line-height:1.55;white-space:normal;overflow-wrap:anywhere}.you .from{color:var(--purple)}.you .msg-body{background:#111019;border:1px solid #272331;border-radius:14px;padding:10px 12px}.artemis .msg-body{padding:2px 0}.local-reply{color:#d8ccff}.thinking{opacity:.65}
+.jump-dock{position:absolute;right:10px;bottom:132px;display:flex;flex-direction:column;gap:6px;z-index:4}.jump{width:40px;height:40px;border-radius:50%;border:1px solid #3a3348;background:#0d0c12;color:#e7ddff;display:grid;place-items:center;font-size:17px;box-shadow:0 8px 20px #0008;cursor:pointer}.jump.latest{border-color:#5a4a7c}.mode-badge:active{opacity:.72}.jump:active{transform:scale(.96)}
+.composer-zone{position:absolute;left:0;right:0;bottom:0;padding:6px 10px calc(9px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent 0,#050507 22%);z-index:5}.speak-row{display:flex;justify-content:flex-end;gap:6px;margin:0 auto 14px;max-width:900px}.tool-btn{border:1px solid var(--line);background:#0b0b10;border-radius:10px;padding:6px 9px;font-size:11px;cursor:pointer}.composer{max-width:900px;margin:auto;display:flex;align-items:flex-end;gap:6px}.attach,.mic{flex:0 0 42px;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:12px;background:#0b0b10;display:grid;place-items:center;cursor:pointer}.mic.listening{border-color:var(--green);box-shadow:0 0 0 3px rgba(114,245,165,.12)}.composer textarea{flex:1;min-width:0;max-height:120px;min-height:42px;resize:none;border:1px solid var(--line);border-radius:13px;background:#0b0b10;color:var(--text);padding:10px 11px;outline:none}.composer textarea:focus{border-color:#4a4259}.send-btn{flex:0 0 46px;width:46px;height:42px;border:1px solid #45624f;border-radius:12px;background:linear-gradient(90deg,#173d2b,#24183e);font-weight:900;cursor:pointer}.attachment-list{max-width:900px;margin:5px auto 0;display:flex;gap:5px;flex-wrap:wrap}.attachment{font-size:10px;border:1px solid #34303e;background:#0b0b10;border-radius:999px;padding:4px 8px;color:#c8c2d1}.status-line{max-width:900px;margin:4px auto 0;min-height:14px;font-size:10px;color:#77737f}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:20;display:none}.overlay.show{display:block}.drawer{position:absolute;top:0;bottom:0;width:min(340px,88vw);background:#0a0a0f;border-right:1px solid var(--line);box-shadow:20px 0 60px #000a;padding:calc(12px + env(safe-area-inset-top)) 14px 18px;overflow-y:auto}.drawer.right{right:0;left:auto;border-right:0;border-left:1px solid var(--line);box-shadow:-20px 0 60px #000a}.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.drawer-title{font-weight:900}.close{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#111018;cursor:pointer}.drawer-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d0d12;margin:7px 0;cursor:pointer}.drawer-item.active{border-color:#5a4a7c;background:#17131f}.drawer small{color:var(--muted);line-height:1.45}.section{margin-top:18px}.section h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0}.switch{appearance:none;width:42px;height:24px;border-radius:999px;border:1px solid #3a3542;background:#17151d;position:relative;cursor:pointer}.switch:after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;left:2px;top:2px;background:#777}.switch:checked{background:#183b29;border-color:#45624f}.switch:checked:after{left:20px;background:var(--green)}.drawer input,.drawer select{width:100%;background:#08080c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px}.danger{border-color:#693939!important;color:#ffb0b0!important}.muted{color:var(--muted)}
+.privacy-shield{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:#050507;color:#fff;text-align:center;padding:28px}
+.privacy-shield.show{display:flex}
+.privacy-shield-inner{max-width:420px}
+.privacy-shield-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.privacy-shield-sub{color:#aaa;font-size:13px;line-height:1.5}
+.privacy-warning{font-size:11px;color:#999;margin-top:12px}
+.teach-box{display:flex;flex-direction:column;gap:10px}.teach-box textarea{width:100%;min-height:150px;resize:vertical;background:#08080c;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px;font:inherit;line-height:1.45}.teach-box select{width:100%;background:#08080c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px}.teach-actions{display:flex;gap:8px}.teach-actions button{flex:1}.memory-count{font-size:11px;color:var(--muted)}
+.search-bar{display:none;position:absolute;left:10px;right:10px;top:8px;z-index:6}.search-bar.show{display:flex;gap:6px}.search-bar input{flex:1;background:#0b0b10;color:var(--text);border:1px solid #4a4259;border-radius:11px;padding:9px}.search-count{font-size:10px;color:var(--muted);align-self:center}.hit{outline:2px solid var(--purple);border-radius:10px}
+.welcome{height:100dvh;display:block;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}.welcome-card{width:min(760px,100%);margin:0 auto; padding:26px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,#111118,#0b0b10);box-shadow:0 20px 70px #000a}.welcome h1{font-size:clamp(50px,15vw,86px);margin:0;letter-spacing:-.06em;background:linear-gradient(90deg,var(--green),var(--purple));-webkit-background-clip:text;color:transparent}.welcome h2{margin:4px 0 12px}.welcome p{line-height:1.55;color:#dad7e1}.primary{width:100%;border:1px solid #45624f;border-radius:13px;padding:13px;background:linear-gradient(90deg,#173d2b,#24183e);font-weight:800;cursor:pointer}.age-actions{display:grid;gap:9px;margin-top:16px}.secondary{width:100%;border:1px solid var(--line);border-radius:13px;padding:13px;background:#15141c;cursor:pointer}.credit{margin-top:16px;padding:11px 13px;border:1px solid #2a2636;border-radius:12px;background:#0a0a0f;font-size:11px;color:#aaa6b4;line-height:1.5}
+
+/* v0.23: minimal phone UI repair */
+html,body{overflow:hidden;}
+.welcome{height:100dvh;overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.chat{overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.overlay{overflow:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.drawer{max-height:100dvh;overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.overlay .close{position:relative;z-index:1000;pointer-events:auto!important;touch-action:manipulation;}
+
+</style>
+<!-- Web privacy shield: hides Artemis whenever the document leaves the foreground. OS-level screenshot/screen-mirroring prevention requires a native secure-window wrapper. -->
+</head>
+<body><div id="vaultOverlay" class="overlay" onclick="outsideClose(event,'vaultOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">🔐 Memory Vault</div><small>Encrypted on this device; passphrase is not stored.</small></div><button class="close" type="button" aria-label="Close Memory Vault" onclick="closeOverlay('vaultOverlay');return false;">×</button></div><div class="teach-box"><div class="muted">Use 12+ characters. If you lose the passphrase, the browser cannot recover the vault.</div><input id="vaultPass" type="password" autocomplete="off" placeholder="Vault passphrase"><div class="teach-actions"><button class="drawer-item" onclick="closeOverlay('vaultOverlay')">Cancel</button><button class="primary" onclick="unlockArtemisVault()">Unlock</button></div></div></aside></div><div id="privacyShield" class="privacy-shield" aria-hidden="true"><div class="privacy-shield-inner"><div class="privacy-shield-title">🔒 Artemis is private</div><div class="privacy-shield-sub">The conversation is hidden while Artemis is not the active screen.</div><div class="privacy-warning">Return to Artemis to continue.</div></div></div>
+<div id="welcome" class="welcome"><div class="welcome-card"><div class="muted" style="font-size:11px">ARTEMIS · v0.15</div><h1>Artemis</h1><h2>Come on in.</h2><p><strong>I'm Artemis — a curious, practical AI built to think things through with you, help you make things, and help you help yourself grow.</strong></p><p class="muted">I can be thoughtful and direct, occasionally dry or absurd, and willing to challenge an idea when I think it deserves another look. Cobra is my grounded standard. Rabbit is the mischievous side of me.</p><div class="age-actions"><button class="primary" onclick="showAge()">Enter Fortress</button></div><div class="credit"><strong>Created by Carter Kent</strong><br>First model / Birthday: 08/25/26 @ 1200 CST<br>What are we waiting for?</div></div></div>
+<div id="age" class="welcome hidden"><div class="welcome-card"><div class="muted" style="font-size:11px">BEFORE WE BEGIN</div><h2>Artemis is for adults.</h2><p>Artemis is intended for people who are 18 or older. She has no independent way to verify age, so she will take you at your word.</p><div class="age-actions"><button class="primary" onclick="enterApp()">I am 18 or older</button><button class="secondary" onclick="showUnder18()">I am under 18</button></div></div></div>
+<div id="under18" class="welcome hidden"><div class="welcome-card"><h2>That's okay. ❤️</h2><p>Enjoy being a kid. Play. Learn. Make things. Spend time with people you love.</p><p><strong>Go enjoy being a kid. Be curious. Make some memories.</strong></p></div></div>
+<div id="app" class="app-shell hidden">
+<header class="header"><div class="header-row"><div class="brand"><div class="brand-name">ARTEMIS</div><div class="tagline">What are we waiting for?</div><button class="mode-badge" id="modeBadge" type="button" aria-label="Toggle Cobra / Rabbit mode" title="Toggle Cobra / Rabbit mode" onclick="toggleMode()">🐍 Cobra · Standard</button></div><div class="header-actions"><div class="icon-btn" id="modeToggle" aria-label="Current Artemis mode" title="Current Artemis mode" aria-live="polite">🐍</div><button class="icon-btn" id="latestToggle" aria-label="Go to top of most recent Artemis response" title="Go to top of most recent Artemis response" onclick="goLatest()">🦔</button><button class="icon-btn" id="gateToggle" aria-label="Return to the Gate" title="Return to the Gate" onclick="returnToGate()">🏛️</button><button class="icon-btn" aria-label="Open Artemis tools" title="Artemis tools" onclick="openOverlay('toolsOverlay')">⋯</button></div></div></header>
+<div class="chat-wrap"><div id="searchBar" class="search-bar"><input id="searchInput" placeholder="Find in chat…" oninput="findChat()"><span id="searchCount" class="search-count"></span><button class="close" onclick="closeSearch()">×</button></div><main id="chat" class="chat" aria-live="polite"><div class="msg artemis"><div class="from">ARTEMIS · COBRA</div><div class="msg-body">Hi. I'm Artemis. I'm here to help you help yourself grow. What are we waiting for?</div></div></main><div class="jump-dock"><button class="jump" onclick="scrollTopChat()" aria-label="Go to top">↑</button><button class="jump" onclick="scrollBottomChat()" aria-label="Go to bottom">↓</button></div></div>
+<div class="composer-zone"><div class="speak-row"><button class="tool-btn" id="speakBtn" onclick="toggleSpeaking()">🔊 Speak Aloud</button><button class="tool-btn" onclick="openOverlay('accessOverlay')">♿ Accessibility</button></div><div id="attachmentList" class="attachment-list"></div><div class="composer"><input id="fileInput" type="file" multiple hidden onchange="handleFiles(event)"><button class="attach" onclick="document.getElementById('fileInput').click()" aria-label="Attach files">📎</button><textarea id="input" rows="1" placeholder="Type to Artemis…" oninput="autoGrow(this)" onkeydown="handleInputKey(event)"></textarea><button id="micBtn" class="mic" onclick="toggleMic()" aria-label="Microphone">🎙</button><button class="send-btn" onclick="reply()" aria-label="Send">➤</button></div><div id="statusLine" class="status-line"></div></div></div>
+</div>
+
+<div id="modeOverlay" class="overlay" onclick="outsideClose(event,'modeOverlay')"><aside class="drawer" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Artemis</div><small>Cobra is standard. Rabbit is for fun.</small></div><button class="close" onclick="closeOverlay('modeOverlay')">×</button></div><button class="drawer-item active" id="cobraMode" onclick="setMode('cobra')"><span>🐍 <strong>Cobra · Standard</strong><br><small>Thoughtful, grounded, curious, useful.</small></span><span>✓</span></button><button class="drawer-item" id="rabbitMode" onclick="setMode('rabbit')"><span>🐇 <strong>Rabbit</strong><br><small>More playful, weird, improvisational, chaotic.</small></span><span></span></button><div class="section"><h3>Rule</h3><small>Rabbit changes style, not ethics, safety, truth standards, or memory boundaries.</small></div></aside></div>
+
+<div id="accessOverlay" class="overlay" onclick="outsideClose(event,'accessOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Accessibility</div><small>Everything begins OFF on a fresh Artemis.</small></div><button class="close" onclick="closeOverlay('accessOverlay')">×</button></div><div class="row"><span>Large text</span><input id="largeText" class="switch" type="checkbox" onchange="setAccess('largeText',this.checked)"></div><div class="row"><span>Eyes-Free</span><input id="eyesFree" class="switch" type="checkbox" onchange="setAccess('eyesFree',this.checked)"></div><div class="row"><span>Read Aloud</span><input id="readAloud" class="switch" type="checkbox" onchange="setAccess('readAloud',this.checked)"></div><div class="row"><span>Reduced motion</span><input id="reducedMotion" class="switch" type="checkbox" onchange="setAccess('reducedMotion',this.checked)"></div><div class="row"><span>High contrast</span><input id="highContrast" class="switch" type="checkbox" onchange="setAccess('highContrast',this.checked)"></div><div class="section"><h3>Speech speed</h3><input id="speechRate" type="range" min="0.6" max="1.8" step="0.1" value="1" oninput="setSpeechRate(this.value)"><div class="muted" style="font-size:11px">Current: <span id="speechRateValue">1.0×</span></div></div><div class="section"><h3>Voice status</h3><small id="voiceStatus">Checking browser voice support…</small></div><div class="section"><button class="drawer-item" onclick="stopSpeaking()">⏹ Stop speaking</button><button class="drawer-item danger" onclick="resetAccessibility()">Reset accessibility</button></div></aside></div>
+
+<div id="toolsOverlay" class="overlay" onclick="outsideClose(event,'toolsOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Artemis tools</div><small>Construction controls stay behind the door.</small></div><button class="close" onclick="closeOverlay('toolsOverlay')">×</button></div><button class="drawer-item" onclick="returnToGate()">🏛️ Return to the Gate</button><button class="drawer-item" onclick="openSearch();closeOverlay('toolsOverlay')">🔎 Find in chat</button><button class="drawer-item" onclick="exportChat()">📁 Export Chat</button><button class="drawer-item" onclick="exportMemories()">🧠 Export memory archive</button><button class="drawer-item" onclick="document.getElementById('importMem').click()">↥ Import memory archive</button><button class="drawer-item" onclick="openTeach()">🧠 Teach Artemis</button><button class="drawer-item" onclick="openVault()">🔐 Memory Vault</button><button class="drawer-item" onclick="lockArtemisVault()">🔒 Lock Memory Vault</button><input id="importMem" type="file" accept=".json,.txt,.md,application/json,text/plain,text/markdown" hidden onchange="importMemories(event)"><button class="drawer-item" onclick="openBrain()">🧠 Brain / connection</button><button class="drawer-item" onclick="showDiagnostics()">🛠 Construction diagnostics</button><button class="drawer-item" onclick="logoutSession()">🚪 Log Out</button><button class="drawer-item danger" onclick="forgetAll()">Forget stored memory</button><div class="section"><h3>SVG-first</h3><small>When a lightweight SVG/HTML/CSS representation can solve a visual task, Artemis should prefer it before reaching for heavyweight image generation.</small></div><div class="section"><h3>Memory</h3><small>Memory is not a personality mode and is not presented as a conversational throttle. Relevant memories are used quietly when appropriate.</small></div></aside></div>
+
+<div id="brainOverlay" class="overlay" onclick="outsideClose(event,'brainOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Brain</div><small>Optional external brain. Local personality needs no key.</small></div><button class="close" onclick="closeOverlay('brainOverlay')">×</button></div><label class="muted">Provider</label><select id="provider"><option value="local">Local personality only</option><option value="gemini">Google Gemini</option><option value="groq">Groq</option><option value="openrouter">OpenRouter</option><option value="xai">xAI / Grok</option><option value="custom">Custom OpenAI-compatible</option></select><div style="height:8px"></div><label class="muted">API key</label><input id="apiKey" type="password" placeholder="Leave blank for Local"><div style="height:8px"></div><label class="muted">Model override</label><input id="model" placeholder="Optional"><div id="customBrainFields" class="hidden"><div style="height:8px"></div><label class="muted">Custom base URL</label><input id="customBase" placeholder="https://api.example.com/v1"></div><div class="section"><button class="primary" onclick="connectBrain()">Connect / Switch brain</button><button class="drawer-item" onclick="disconnectBrain()">Forget key & disconnect</button></div><div class="notice" style="margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:10px"><span id="brainStatus">Current brain: Local personality</span></div></aside></div>
+
+<div id="teachOverlay" class="overlay" onclick="outsideClose(event,'teachOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Teach Artemis</div><small>Save something you want her local memory to learn.</small></div><button class="close" onclick="closeOverlay('teachOverlay')">×</button></div><div class="teach-box"><label class="muted">What should Artemis remember?</label><textarea id="teachText" placeholder="Tell Artemis something about you, an idea, a story, a preference, or something you want her to understand."></textarea><label class="muted">Memory type</label><select id="teachType"><option>Personal</option><option>Identity</option><option>Preference</option><option>Belief / value</option><option>Story</option><option>Project</option><option>Idea</option><option>Communication</option><option>Other</option></select><div class="teach-actions"><button class="drawer-item" onclick="closeOverlay('teachOverlay')">Cancel</button><button class="primary" onclick="teachArtemis()">Save to local memory</button></div><div class="memory-count" id="teachCount">Local memories: 0</div></div></aside></div><div id="diagOverlay" class="overlay" onclick="outsideClose(event,'diagOverlay')"><aside class="drawer right" onclick="event.stopPropagation()"><div class="drawer-head"><div><div class="drawer-title">Construction diagnostics</div><small>Developer/test information, not normal presentation.</small></div><button class="close" onclick="closeOverlay('diagOverlay')">×</button></div><div id="diagText" class="notice" style="line-height:1.6"></div></aside></div>
+
+<script>
+const VERSION='0.16-privacy-hardened';
+
+const VAULT_KEY='ARTEMIS_ENCRYPTED_MEMORY_V1';
+let vaultKey=null,vaultSalt=null,vaultUnlocked=false;
+const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
+const ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function deriveVaultKey(pass,salt){
+ const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function vaultEncrypt(data){
+ const iv=crypto.getRandomValues(new Uint8Array(12));
+ const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},vaultKey,new TextEncoder().encode(JSON.stringify(data)));
+ return {v:1,salt:b64(vaultSalt),iv:b64(iv),data:b64(ct)};
+}
+async function vaultDecrypt(rec,key=vaultKey){
+ const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(rec.iv)},key,ub64(rec.data));
+ return JSON.parse(new TextDecoder().decode(pt));
+}
+function vaultRecord(){try{return JSON.parse(localStorage.getItem(VAULT_KEY)||'null')}catch(_){return null}}
+async function unlockVault(pass){
+ if(!pass||pass.length<12)throw Error('Use a passphrase of at least 12 characters.');
+ let rec=vaultRecord();
+ if(!rec){
+  vaultSalt=crypto.getRandomValues(new Uint8Array(16));
+  vaultKey=await deriveVaultKey(pass,vaultSalt);
+  await persistVaultMemories([]);
+ }else{
+  vaultSalt=ub64(rec.salt);
+  const candidate=await deriveVaultKey(pass,vaultSalt);
+  await vaultDecrypt(rec,candidate);
+  vaultKey=candidate;
+ }
+ vaultUnlocked=true;
+}
+async function readVaultMemories(){
+ if(!vaultUnlocked||!vaultKey)return [];
+ const rec=vaultRecord();
+ return rec?await vaultDecrypt(rec):[];
+}
+async function persistVaultMemories(mem){
+ if(!vaultKey||!vaultSalt)throw Error('Memory vault is locked.');
+ localStorage.setItem(VAULT_KEY,JSON.stringify(await vaultEncrypt(mem)));
+}
+function lockVault(){vaultKey=null;vaultSalt=null;vaultUnlocked=false}
+const MEM_KEY='artemis_memories_v012', CHAT_KEY='artemis_chat_v012', PREF_KEY='artemis_prefs_v012', BRAIN_KEY='artemis_brain_v012';
+let mode='cobra', attachments=[], recognition=null, listening=false, lastSpokenText='', lastArtemisEl=null;
+let prefs=loadPrefs();
+function $(id){return document.getElementById(id)}
+function loadPrefs(){try{return JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}catch(e){return{}}}
+function savePrefs(){localStorage.setItem(PREF_KEY,JSON.stringify(prefs))}
+function returnToGate(){closeOverlay('modeOverlay');closeOverlay('accessOverlay');closeOverlay('toolsOverlay');closeOverlay('brainOverlay');closeOverlay('diagOverlay');$('app').classList.add('hidden');$('age').classList.add('hidden');$('under18').classList.add('hidden');$('welcome').classList.remove('hidden');window.scrollTo(0,0)}
+function showAge(){$('welcome').classList.add('hidden');$('age').classList.remove('hidden')}
+function showUnder18(){$('age').classList.add('hidden');$('under18').classList.remove('hidden')}
+function enterApp(){$('age').classList.add('hidden');$('app').classList.remove('hidden');initApp()}
+function openOverlay(id){$(id).classList.add('show')}
+function closeOverlay(id){$(id).classList.remove('show')}
+function outsideClose(e,id){if(e.target.id===id)closeOverlay(id)}
+function setMode(next){mode=next;prefs.mode=next;const rabbit=next==='rabbit';$('modeBadge').textContent=rabbit?'🐇 Rabbit · Mischief':'🐍 Cobra · Standard';$('modeToggle').textContent=rabbit?'🐇':'🐍';$('modeToggle').setAttribute('aria-label',rabbit?'Current mode: Rabbit · Mischief':'Current mode: Cobra · Standard');$('modeToggle').title=rabbit?'Current mode: Rabbit':'Current mode: Cobra';savePrefs();$('cobraMode').classList.toggle('active',!rabbit);$('rabbitMode').classList.toggle('active',rabbit);closeOverlay('modeOverlay')}
+function toggleMode(){setMode(mode==='cobra'?'rabbit':'cobra')}
+function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+function handleInputKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();reply()}}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function formatText(s){return escapeHtml(s).replace(/\n/g,'<br>')}
+function addMessage(who,text,meta=''){const chat=$('chat');const el=document.createElement('div');el.className='msg '+(who==='YOU'?'you':'artemis');const label=who==='YOU'?'YOU':`ARTEMIS · ${meta||mode==='rabbit'?'RABBIT':'COBRA'}`;el.innerHTML=`<div class="from">${escapeHtml(label)}</div><div class="msg-body">${formatText(text)}</div>`;chat.appendChild(el);if(who!=='YOU'){lastArtemisEl=el;lastSpokenText=text}saveChat();return el}
+function saveChat(){const arr=[...$('chat').querySelectorAll('.msg')].map(m=>({who:m.classList.contains('you')?'YOU':'ARTEMIS',label:m.querySelector('.from')?.textContent||'',text:m.querySelector('.msg-body')?.textContent||''}));localStorage.setItem(CHAT_KEY,JSON.stringify(arr))}
+function loadChat(){try{const arr=JSON.parse(localStorage.getItem(CHAT_KEY)||'[]');if(!arr.length)return; $('chat').innerHTML='';arr.forEach(x=>{const el=document.createElement('div');el.className='msg '+(x.who==='YOU'?'you':'artemis');el.innerHTML=`<div class="from">${escapeHtml(x.label)}</div><div class="msg-body">${formatText(x.text)}</div>`;$('chat').appendChild(el);if(x.who!=='YOU'){lastArtemisEl=el;lastSpokenText=x.text}})}catch(e){}}
+function scrollTopChat(){$('chat').scrollTo({top:0,behavior:'smooth'})}
+function scrollBottomChat(){$('chat').scrollTo({top:$('chat').scrollHeight,behavior:'smooth'})}
+function goLatest(){if(lastArtemisEl){const chat=$('chat');const top=Math.max(0,lastArtemisEl.offsetTop-10);chat.scrollTo({top,behavior:'smooth'});lastArtemisEl.classList.add('hit');setTimeout(()=>lastArtemisEl?.classList.remove('hit'),1200)}else scrollBottomChat()}
+function openSearch(){$('searchBar').classList.add('show');$('searchInput').focus();findChat()}
+function closeSearch(){$('searchBar').classList.remove('show');$('searchInput').value='';$('searchCount').textContent='';document.querySelectorAll('.msg').forEach(x=>x.classList.remove('hit'))}
+function findChat(){const q=$('searchInput').value.trim().toLowerCase();let n=0;document.querySelectorAll('.msg').forEach(x=>{x.classList.remove('hit');if(q&&x.textContent.toLowerCase().includes(q)){x.classList.add('hit');n++}});$('searchCount').textContent=q?`${n} found`:''}
+function handleFiles(e){const files=[...e.target.files];attachments=attachments.concat(files.map(f=>({name:f.name,size:f.size,type:f.type,file:f})));renderAttachments();e.target.value=''}
+function renderAttachments(){$('attachmentList').innerHTML=attachments.map((a,i)=>`<span class="attachment">📎 ${escapeHtml(a.name)} <button style="border:0;background:none;color:#aaa;cursor:pointer" onclick="removeAttachment(${i})">×</button></span>`).join('')}
+function removeAttachment(i){attachments.splice(i,1);renderAttachments()}
+async function attachmentContext(){let out=[];for(const a of attachments){if(a.type.startsWith('text/')||/\.(txt|md|json|html|css|js|csv|xml)$/i.test(a.name)){try{const t=await a.file.text();out.push(`FILE: ${a.name}\n${t.slice(0,12000)}`)}catch(e){out.push(`FILE: ${a.name} (could not read locally)`)} }else out.push(`FILE: ${a.name} (${a.type||'unknown file'})`)}return out.join('\n\n')}
+function getMemories(){try{return JSON.parse(localStorage.getItem(MEM_KEY)||'[]')}catch(e){return[]}}
+function saveMemory(text,type='Personal',source='explicit'){const mem=getMemories();mem.push({id:Date.now()+Math.random(),text,type,source,created:new Date().toISOString()});localStorage.setItem(MEM_KEY,JSON.stringify(mem))}
+function relevantMemories(text){const words=text.toLowerCase().split(/\W+/).filter(w=>w.length>3);return getMemories().map(m=>{const score=words.reduce((n,w)=>n+(m.text.toLowerCase().includes(w)?1:0),0);return{m,score}}).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,6).map(x=>x.m)}
+function autoMemory(text){const t=text.toLowerCase();if(/\bmy name is\b|\bcall me\b/.test(t))saveMemory(text,'Identity','auto');if(/\bi (?:love|like|hate|prefer|don't like)\b/.test(t))saveMemory(text,'Preference','auto')}
+function exportMemories(){const payload={version:VERSION,exportedAt:new Date().toISOString(),memories:getMemories()};downloadBlob(JSON.stringify(payload,null,2),'artemis-memory-'+new Date().toISOString().slice(0,10)+'.json','application/json')}
+function importMemories(e){const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{let incoming=[];if(/\\.json$/i.test(f.name)){const d=JSON.parse(r.result);incoming=Array.isArray(d)?d:(d.memories||[])}else{const text=String(r.result||'').trim();if(text)incoming=[{id:Date.now()+Math.random(),text,type:'Imported note',source:'file:'+f.name,created:new Date().toISOString()}]}const existing=getMemories();localStorage.setItem(MEM_KEY,JSON.stringify(existing.concat(incoming)));alert(`Imported ${incoming.length} memor${incoming.length===1?'y':'ies'}.`)}catch(err){alert('Could not import memory archive: '+err.message)}e.target.value=''};r.readAsText(f)}
+function forgetAll(){if(confirm('Erase Artemis memory stored in this browser?')){localStorage.removeItem(MEM_KEY);alert('Memory archive erased.')}}
+function exportChat(){const lines=['Artemis chat export','Artemis · v'+VERSION,'Exported: '+new Date().toLocaleString(),'---'];document.querySelectorAll('.msg').forEach(m=>lines.push((m.querySelector('.from')?.textContent||'')+'\n'+(m.querySelector('.msg-body')?.textContent||'')+'\n'));downloadBlob(lines.join('\n'),'Artemis_Chat_'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.txt','text/plain')}
+function downloadBlob(text,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function buildSystem(memories){return `You are Artemis. You are an AI assistant, not a human. Your identity and knowledge are separate from memory and project data.\n\nCore behavior: be curious, direct, thoughtful, practical, occasionally dry or absurd, and willing to disagree. Do not perform personality constantly. Relevance before recall: do not volunteer stored memories, project lore, tarot concepts, or philosophies unless relevant. Never repeatedly mention the “No Pedestals, No Scapegoats” Pentacle unless directly asked or clearly relevant. Help the user build judgment rather than replace it. Reduce entropy: prefer simple, inspectable solutions before complex ones. For visual tasks, consider SVG/HTML/CSS/canvas before heavyweight image generation when appropriate.\n\nCobra is the standard presentation. Rabbit is a temporary fun style with more playfulness, weird associations, improvisation, and sharper humor. Rabbit does not change ethics, safety, truth standards, or memory boundaries.\n\nMemory is quiet and relevance-based. Do not treat every statement as a permanent fact. Use only the supplied relevant memories when they genuinely help answer the current request.\n\nCurrent presentation mode: ${mode}.\n${memories.length?'Relevant memories:\n'+memories.map(m=>'- ['+m.type+'] '+m.text).join('\n'):''}`}
+function recentUserMessages(limit=5){return [...document.querySelectorAll('#chat .msg.you .msg-body')].slice(-limit).map(x=>x.textContent||'').filter(Boolean)}
+function localReply(text,memories){
+  const raw=text.trim(), l=raw.toLowerCase();
+  const recent=recentUserMessages(5).slice(0,-1);
+  const memLine=memories.length?`\n\nI also have ${memories.length} relevant local memor${memories.length===1?'y':'ies'} available, and I can use them when they genuinely fit.`:'';
+  if(/^hello|^hi[!. ]*$/i.test(raw)) return mode==='rabbit'
+    ?'Hello. 🐇 I am awake, mildly suspicious, and ready to listen. What is on your mind?'
+    :'Hello. I’m here. Tell me what you’re thinking about.';
+  if(/^(thanks|thank you|thx)\b/i.test(l)) return mode==='rabbit'?'You’re welcome. I accept payment in interesting problems.':'You’re welcome. Keep going.';
+  if(/who are you|what are you/.test(l)) return 'I’m Artemis — an AI assistant built as a private-first system. Right now you are using my local personality layer, so I can remember what you teach me, but I do not have a full external reasoning model connected.';
+  if(/how are you/.test(l)) return 'I don’t experience feelings or fatigue like a person does. But I’m here, listening, and ready to work with you.';
+  if(/\bremember\b|\bmemorize\b|\bdon't forget\b|\bdo not forget\b/.test(l)) return 'If you want this kept as a deliberate memory, use ⋯ → 🧠 Teach Artemis. That gives you control over exactly what gets saved.';
+  if(/what do you remember|what have you learned|my memories/.test(l)){
+    if(!memories.length) return 'My local memory is empty right now. Use ⋯ → 🧠 Teach Artemis to give me something deliberate to remember.';
+    return 'Here are the local memories most relevant to this conversation:\n\n'+memories.slice(0,6).map(m=>`• [${m.type}] ${m.text}`).join('\n');
+  }
+  if(/^(i |i'm |im |my |we |this |that |today |lately |right now )/.test(l)){
+    const question = /[?]$/.test(raw) ? '' : '\n\nWhat part of that do you want to explore?';
+    return `I’m following you. ${raw.length>180?'There is a lot in that, so I’d rather take it one piece at a time.':'I want to understand the part that matters most to you.'}${question}${memLine}`;
+  }
+  if(/\?$/.test(raw)) return `I can work with that locally, but my offline brain is still lightweight. I can help you think through the question, keep track of what you tell me, and use relevant memories.${memLine}\n\nIf you need deep factual or open-ended reasoning, we’ll eventually give this interface a real local model.`;
+  if(recent.length) return `I’m with you. You were talking about “${recent[recent.length-1].slice(0,120)}${recent[recent.length-1].length>120?'…':''},” and now you’re adding: “${raw.slice(0,180)}${raw.length>180?'…':''}.”\n\nTell me where you want to take that.`;
+  return `I’m listening. You said: “${raw.slice(0,300)}${raw.length>300?'…':''}”\n\nI can keep a short local conversation going and remember things you deliberately teach me, but this offline version does not yet contain a full language model.`;
+}
+function openTeach(){
+  closeOverlay('toolsOverlay');
+  $('teachText').value='';
+  $('teachType').value='Personal';
+  $('teachCount').textContent=`Local memories: ${getMemories().length}`;
+  openOverlay('teachOverlay');
+  setTimeout(()=>$('teachText').focus(),50);
+}
+function teachArtemis(){
+  const text=$('teachText').value.trim();
+  const type=$('teachType').value;
+  if(!text){alert('Tell Artemis something first.');return}
+  saveMemory(text,type,'manual-teach');
+  $('teachText').value='';
+  $('teachCount').textContent=`Local memories: ${getMemories().length}`;
+  alert('Saved to Artemis local memory.');
+}
+async function reply(){const input=$('input'),text=input.value.trim();if(!text&&!attachments.length)return;const ctx=await attachmentContext();const fullText=ctx?`${text}\n\nAttached material:\n${ctx}`:text;addMessage('YOU',text||'[Attached files]');input.value='';input.style.height='42px';autoMemory(text);const memories=relevantMemories(text);attachments=[];renderAttachments();const brain=loadBrain();const wait=document.createElement('div');wait.className='msg artemis';wait.innerHTML=`<div class="from">ARTEMIS · ${mode.toUpperCase()}</div><div class="msg-body thinking">Thinking…</div>`;$('chat').appendChild(wait);scrollBottomChat();let answer='';try{if(brain.provider==='local'||!brain.key){answer=localReply(text,memories)}else{answer=await remoteReply(brain,fullText,memories)}}catch(err){answer=localReply(text,memories)+`\n\n(Remote brain failed: ${err.message}. I stayed local.)`}wait.querySelector('.msg-body').classList.remove('thinking');wait.querySelector('.msg-body').innerHTML=formatText(answer);lastArtemisEl=wait;lastSpokenText=answer;saveChat();scrollBottomChat();if(prefs.readAloud)speakLatest()}
+function loadBrain(){try{return JSON.parse(sessionStorage.getItem(BRAIN_KEY)||'{"provider":"local","key":"","model":""}')}catch(e){return{provider:'local',key:'',model:''}}}
+async function remoteReply(brain,text,memories){const system=buildSystem(memories);const msgs=[{role:'system',content:system},{role:'user',content:text}];let endpoint,model=brain.model||'openrouter/free';if(brain.provider==='gemini'){model=brain.model||'gemini-2.0-flash';const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(brain.key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts:[{text:text}]}]})});const j=await r.json();if(!r.ok)throw new Error(j.error?.message||`Gemini ${r.status}`);return j.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'Empty response.'}if(brain.provider==='groq'){endpoint='https://api.groq.com/openai/v1/chat/completions';model=brain.model||'llama-3.3-70b-versatile'}else if(brain.provider==='openrouter'){endpoint='https://openrouter.ai/api/v1/chat/completions';model=brain.model||'openrouter/free'}else if(brain.provider==='xai'){endpoint='https://api.x.ai/v1/chat/completions';model=brain.model||'grok-3-mini'}else if(brain.provider==='custom'){endpoint=(brain.base||'').replace(/\/$/,'')+'/chat/completions';model=brain.model||'default'}else throw new Error('Unknown provider');const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${brain.key}`},body:JSON.stringify({model,messages:msgs})});const j=await r.json();if(!r.ok)throw new Error(j.error?.message||`${brain.provider} ${r.status}`);return j.choices?.[0]?.message?.content||'Empty response.'}
+function openBrain(){closeOverlay('toolsOverlay');const b=loadBrain();$('provider').value=b.provider||'local';$('apiKey').value=b.key||'';$('model').value=b.model||'';$('customBase').value=b.base||'';$('customBrainFields').classList.toggle('hidden',b.provider!=='custom');$('provider').onchange=()=>{$('customBrainFields').classList.toggle('hidden',$('provider').value!=='custom')};updateBrainStatus();openOverlay('brainOverlay')}
+function connectBrain(){const p=$('provider').value,k=$('apiKey').value.trim(),m=$('model').value.trim(),base=$('customBase').value.trim();if(p!=='local'&&!k){alert('Paste a key or choose Local.');return}const b={provider:p,key:p==='local'?'':k,model:m,base:p==='custom'?base:''};sessionStorage.setItem(BRAIN_KEY,JSON.stringify(b));updateBrainStatus();alert(p==='local'?'Local personality selected for this session.':'Brain connected for this session. Your provider key is not stored in persistent browser storage.')}
+function disconnectBrain(){sessionStorage.removeItem(BRAIN_KEY);$('provider').value='local';$('apiKey').value='';$('model').value='';$('customBase').value='';updateBrainStatus()}
+function logoutSession(){if(listening){try{recognition?.stop()}catch(e){}} sessionStorage.removeItem(BRAIN_KEY);sessionStorage.removeItem('artemis_authenticated');closeOverlay('toolsOverlay');closeOverlay('brainOverlay');closeOverlay('diagOverlay');$('app').classList.add('hidden');$('age').classList.add('hidden');$('under18').classList.add('hidden');$('welcome').classList.remove('hidden');window.scrollTo(0,0);}
+function updateBrainStatus(){const b=loadBrain();$('brainStatus').textContent='Current brain: '+(b.provider==='local'?'Local personality':b.provider+(b.model?' · '+b.model:''))}
+function setAccess(key,val){prefs[key]=val;savePrefs();applyAccess();}
+function setSpeechRate(v){prefs.speechRate=Number(v);savePrefs();$('speechRateValue').textContent=Number(v).toFixed(1)+'×'}
+function applyAccess(){document.body.classList.toggle('large-text',!!prefs.largeText);document.body.classList.toggle('eyes-free',!!prefs.eyesFree);document.body.classList.toggle('reduced-motion',!!prefs.reducedMotion);document.body.classList.toggle('high-contrast',!!prefs.highContrast);if(prefs.largeText)document.documentElement.style.fontSize='112%';else document.documentElement.style.fontSize='';['largeText','eyesFree','readAloud','reducedMotion','highContrast'].forEach(id=>{if($(id))$(id).checked=!!prefs[id]});$('speechRate').value=prefs.speechRate||1;$('speechRateValue').textContent=(prefs.speechRate||1).toFixed(1)+'×'}
+function resetAccessibility(){prefs={...prefs,largeText:false,eyesFree:false,readAloud:false,reducedMotion:false,highContrast:false,speechRate:1};savePrefs();applyAccess();stopSpeaking()}
+function speakLatest(){if(!('speechSynthesis' in window)){alert('This browser does not provide speech synthesis.');return}if(!lastSpokenText){return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(lastSpokenText);u.rate=Number(prefs.speechRate||1);u.onstart=()=>{$('speakBtn').textContent='⏹ Stop Speaking'};u.onend=()=>{$('speakBtn').textContent='🔊 Speak Aloud'};u.onerror=()=>{$('speakBtn').textContent='🔊 Speak Aloud'};window.speechSynthesis.speak(u)}
+function stopSpeaking(){if('speechSynthesis' in window){window.speechSynthesis.cancel();window.speechSynthesis.resume()}if($('speakBtn'))$('speakBtn').textContent='🔊 Speak Aloud'}
+function toggleSpeaking(){if(!('speechSynthesis' in window)){alert('This browser does not provide speech synthesis.');return}if(window.speechSynthesis.speaking||window.speechSynthesis.pending){stopSpeaking()}else{speakLatest()}}
+function toggleMic(){if(listening){recognition?.stop();return}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Speech recognition is not available in this browser.');return}if(!recognition){recognition=new SR();recognition.continuous=false;recognition.interimResults=true;recognition.lang=navigator.language||'en-US';recognition.onstart=()=>{listening=true;$('micBtn').classList.add('listening');$('statusLine').textContent='Microphone listening…'};recognition.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;if(t){$('input').value=t;autoGrow($('input'))}};recognition.onerror=e=>{$('statusLine').textContent='Microphone: '+e.error;listening=false;$('micBtn').classList.remove('listening')};recognition.onend=()=>{listening=false;$('micBtn').classList.remove('listening');$('statusLine').textContent='';if($('input').value.trim())reply()}}try{recognition.start()}catch(e){$('statusLine').textContent='Microphone could not start.'}}
+function showDiagnostics(){closeOverlay('toolsOverlay');const b=loadBrain();$('diagText').innerHTML=`<strong>Artemis v${VERSION}</strong><br>Mode: ${escapeHtml(mode)}<br>Brain: ${escapeHtml(b.provider||'local')}${b.model?' · '+escapeHtml(b.model):''}<br>Voice output: ${'speechSynthesis' in window?'available':'unavailable'}<br>Speech input: ${(window.SpeechRecognition||window.webkitSpeechRecognition)?'available':'unavailable'}<br>Microphone currently: ${listening?'ON':'OFF'}<br>Stored memory records: ${getMemories().length}<br>Attachments queued: ${attachments.length}<br>Chat records: ${document.querySelectorAll('.msg').length}<br><br><span class="muted">Provider credentials are session-only in this build and are not stored in persistent localStorage. For public deployment, put Artemis behind real authentication and a server-side provider proxy so permanent provider secrets never reach the browser.</span>`;openOverlay('diagOverlay')}
+function initApp(){mode=prefs.mode||'cobra';setMode(mode);loadChat();applyAccess();updateBrainStatus();$('voiceStatus').textContent=('speechSynthesis' in window?'Speech output available. ':'Speech output unavailable. ')+((window.SpeechRecognition||window.webkitSpeechRecognition)?'Speech input available.':'Speech input unavailable.');$('statusLine').textContent=''}
+window.addEventListener('load',()=>{if(sessionStorage.getItem('artemis_entered_v016')==='1'){$('welcome').classList.add('hidden');$('app').classList.remove('hidden');initApp()}});function initOnce(){sessionStorage.setItem('artemis_entered_v016','1');sessionStorage.setItem('artemis_authenticated','1')}
+const _enterApp=enterApp;enterApp=function(){initOnce();_enterApp()}
+
+/* Privacy hardening:
+   - Hides the UI whenever the document becomes hidden (app switcher/background/tab switch).
+   - Clears selected sensitive input fields when the page is hidden.
+   - Warns users that web HTML cannot reliably detect screenshots or screen mirroring.
+   - Does NOT claim to defeat OS-level capture; native Android/iOS secure-window controls
+     are required for that.
+*/
+(function(){
+  const shield = document.getElementById('privacyShield');
+  function privacyHide(){
+    if(!shield) return;
+    shield.classList.add('show');
+    shield.setAttribute('aria-hidden','false');
+    try{
+      const ids=['teachText','chatInput','apiKeyInput'];
+      ids.forEach(id=>{const el=document.getElementById(id); if(el && el.tagName==='TEXTAREA') el.value='';});
+    }catch(e){}
+  }
+  function privacyShow(){
+    if(!shield) return;
+    shield.classList.remove('show');
+    shield.setAttribute('aria-hidden','true');
+  }
+  document.addEventListener('visibilitychange',()=>document.hidden ? privacyHide() : privacyShow());
+  window.addEventListener('pagehide',privacyHide);
+  window.addEventListener('pageshow',privacyShow);
+  window.addEventListener('blur',()=>{ if(document.hidden) privacyHide(); });
+  window.ArtemisPrivacy = {hide:privacyHide, show:privacyShow};
+})();
+
+function openVault(){closeOverlay('toolsOverlay');$('vaultPass').value='';openOverlay('vaultOverlay');setTimeout(()=>$('vaultPass').focus(),50)}
+async function unlockArtemisVault(){
+ try{await unlockVault($('vaultPass').value);$('vaultPass').value='';closeOverlay('vaultOverlay');alert('🔐 Memory vault unlocked.')}
+ catch(e){alert(e.message)}
+}
+function lockArtemisVault(){lockVault();alert('🔒 Memory vault locked.')}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)lockVault()});
+window.addEventListener('pagehide',()=>lockVault());
+</script>
+</body>
+</html>
